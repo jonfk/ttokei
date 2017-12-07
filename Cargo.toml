@@ -1,0 +1,10 @@
+[package]
+name = "ttokei"
+version = "0.1.0"
+authors = ["Jonathan Fok kan <jfokkan@gmail.com>"]
+
+[dependencies]
+clap = "2.28.0"
+tokei = "6.1.2"
+chrono = "0.4"
+humantime = "1.0.0"
