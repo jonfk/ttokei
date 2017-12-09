@@ -1,6 +1,10 @@
 
 extern crate tokei;
 extern crate clap;
+extern crate chrono;
+
+#[macro_use]
+extern crate diesel;
 
 pub mod git;
 pub mod traverse;

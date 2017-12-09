@@ -1,5 +1,7 @@
 
 use std::process::Command;
+use chrono::DateTime;
+use chrono::offset::FixedOffset;
 
 pub fn get_tags() -> Vec<String> {
     let output = Command::new("git")
@@ -24,6 +26,19 @@ pub fn get_latest_commit_date() -> String {
         .expect("get latest git commit date failed");
     println!("{:?}", output);
     String::from_utf8(output.stdout).expect("get latest git commit date from output")
+}
+
+pub fn get_latest_commit_datetime() -> DateTime<FixedOffset> {
+    //git log -1 --format=%cI
+    let output = Command::new("git")
+        .args(&["log", "-1", "--format=%cI"])
+        .output()
+        .expect("get latest git commit datetime failed");
+    println!("{:?}", output);
+    DateTime::parse_from_str(str::from_utf8(&output.stdout)
+                                 .expect("get latest git commit datetime from output"),
+                             "%+")
+        .expect("get latest git commit datetime chrono datetime")
 }
 
 pub fn checkout(rev: &str) {
