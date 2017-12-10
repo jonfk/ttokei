@@ -6,16 +6,20 @@ const LINES: &'static str = "lines";
 const ROW: &'static str = "----------------------------------------------------\
                            ---------------------------";
 
-use tokei::{Languages, LanguageType, Language};
-use std::borrow::Cow;
-
 use super::Outputter;
+
+use std::borrow::Cow;
+use tokei::{Languages, LanguageType, Language};
+use chrono::{DateTime, FixedOffset};
 
 #[derive(Copy, Clone)]
 pub struct Text {}
 
 impl Outputter for Text {
-    fn output(&self, languages: Languages) {
+    fn output<'a>(&self,
+                  languages: Languages,
+                  time: &'a DateTime<FixedOffset>,
+                  tag: Option<&'a str>) {
         println!("{}", ROW);
         println!(" {:<12} {:>12} {:>12} {:>12} {:>12} {:>12}",
                  "Language",

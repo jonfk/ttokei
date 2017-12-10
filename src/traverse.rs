@@ -17,8 +17,7 @@ pub fn run_tags<T>(input_path: &str, outputter: &T)
 
     for tag in &tags {
         git::checkout(&tag);
-        let last_date = git::get_latest_commit_date();
-        analysis::get_statistics(outputter, last_date);
+        analysis::get_statistics(outputter, Some(&tag));
     }
 
     env::set_current_dir(&prev_path).unwrap();

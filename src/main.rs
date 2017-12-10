@@ -5,6 +5,8 @@ extern crate chrono;
 
 #[macro_use]
 extern crate diesel;
+#[macro_use]
+extern crate diesel_infer_schema;
 
 pub mod git;
 pub mod traverse;
