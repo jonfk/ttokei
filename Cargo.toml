@@ -5,7 +5,7 @@ authors = ["Jonathan Fok kan <jfokkan@gmail.com>"]
 
 [dependencies]
 log = "0.4.0-rc.1"
-env_logger = "0.4"
+env_logger = "0.5.0-rc.1"
 clap = "2.28.0"
 tokei = "6.1.2"
 

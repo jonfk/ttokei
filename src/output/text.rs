@@ -1,8 +1,3 @@
-const BLANKS: &'static str = "blanks";
-const CODE: &'static str = "code";
-const COMMENTS: &'static str = "comments";
-const FILES: &'static str = "files";
-const LINES: &'static str = "lines";
 const ROW: &'static str = "----------------------------------------------------\
                            ---------------------------";
 
@@ -21,6 +16,7 @@ impl Outputter for Text {
                   time: &'a DateTime<FixedOffset>,
                   tag: Option<&'a str>) {
         println!("{}", ROW);
+        println!("Time: {}, Git Tag: {:?}", time, tag);
         println!(" {:<12} {:>12} {:>12} {:>12} {:>12} {:>12}",
                  "Language",
                  "Files",

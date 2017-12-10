@@ -9,7 +9,7 @@ use self::model::{NewParse, NewLanguage, NewLanguageStats};
 
 use std;
 use log::Level;
-use tokei::{Languages, LanguageType, Language};
+use tokei::Languages;
 use diesel::pg::PgConnection;
 use diesel::Connection;
 use chrono::{DateTime, FixedOffset};
@@ -48,6 +48,7 @@ impl Outputter for PgOutputter {
                                                 time: time,
                                                 git_tag: git_tag,
                                             });
+        debug!("inserted parse: {}", parse_id);
 
         let language_map = languages.remove_empty();
 
@@ -62,6 +63,7 @@ impl Outputter for PgOutputter {
                                                           lines: language.lines as i64,
                                                           nested: language.nested,
                                                       });
+            debug!("inserted language: {}", language_id);
 
             for stats in language.stats {
                 let language_stats_id =
@@ -78,8 +80,6 @@ impl Outputter for PgOutputter {
                                                   });
                 debug!("inserted language stats {}", language_stats_id);
             }
-            debug!("inserted language: {}", language_id);
         }
-        debug!("inserted parse: {}", parse_id);
     }
 }

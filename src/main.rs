@@ -58,13 +58,13 @@ fn main() {
         .get_matches();
 
     match matches.occurrences_of("v") {
-        0 => env::set_var("RUST_LOG", "error"),
-        1 => env::set_var("RUST_LOG", "warn"),
-        2 => env::set_var("RUST_LOG", "info"),
-        3 => env::set_var("RUST_LOG", "debug"),
+        0 => env::set_var("RUST_LOG", "ttokei=error"),
+        1 => env::set_var("RUST_LOG", "ttokei=warn"),
+        2 => env::set_var("RUST_LOG", "ttokei=info"),
+        3 => env::set_var("RUST_LOG", "ttokei=debug"),
         4 | _ => {
             println!("Max logging level");
-            env::set_var("RUST_LOG", "trace");
+            env::set_var("RUST_LOG", "ttokei=trace");
         }
     }
     env_logger::init();
@@ -74,9 +74,9 @@ fn main() {
 
 
     if matches.is_present("tags") {
-        info!("Traversing git repository over tags");
+        debug!("Traversing git repository over tags");
     } else {
-        info!("ttokei over time");
+        debug!("ttokei over time");
     }
 
     if let Some(matches) = matches.subcommand_matches("postgres") {

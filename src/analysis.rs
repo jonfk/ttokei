@@ -2,8 +2,7 @@
 use super::output::Outputter;
 use super::git;
 
-use tokei::{Languages, LanguageType};
-use chrono::{DateTime, FixedOffset};
+use tokei::Languages;
 
 pub fn get_statistics<'a, T>(outputer: &T, git_tag: Option<&'a str>)
     where T: Outputter
@@ -13,9 +12,6 @@ pub fn get_statistics<'a, T>(outputer: &T, git_tag: Option<&'a str>)
 
     // Get statistics
     languages.get_statistics(vec!["."], vec![]);
-
-    // Remove empty languages
-    //let language_map = languages.remove_empty();
 
     let git_commit_date = git::get_latest_commit_datetime();
 

@@ -2,7 +2,7 @@
 pub mod text;
 pub mod postgres;
 
-use tokei::{Languages, LanguageType};
+use tokei::Languages;
 use chrono::DateTime;
 use chrono::FixedOffset;
 

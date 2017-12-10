@@ -44,6 +44,7 @@ pub fn get_latest_commit_datetime() -> DateTime<FixedOffset> {
 }
 
 pub fn checkout(rev: &str) {
+    debug!("git checkout {}", rev);
     Command::new("git")
         .arg("checkout")
         .arg(rev)
