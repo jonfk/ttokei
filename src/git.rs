@@ -9,7 +9,7 @@ pub fn get_tags() -> Vec<String> {
         .arg("tag")
         .output()
         .expect("git tag failed");
-    println!("{:?}", output);
+    trace!("git tag output: {:?}", output);
 
     String::from_utf8(output.stdout)
         .expect("get git tags from output")
@@ -25,7 +25,7 @@ pub fn get_latest_commit_date() -> String {
         .args(&["log", "-1", "--format=%ct"])
         .output()
         .expect("get latest git commit date failed");
-    println!("{:?}", output);
+    trace!("git get latest commit date: {:?}", output);
     String::from_utf8(output.stdout).expect("get latest git commit date from output")
 }
 
@@ -35,7 +35,7 @@ pub fn get_latest_commit_datetime() -> DateTime<FixedOffset> {
         .args(&["log", "-1", "--format=%cI"])
         .output()
         .expect("get latest git commit datetime failed");
-    println!("{:?}", output);
+    trace!("git get latest commit datetime: {:?}", output);
     output.stdout.pop();
     DateTime::parse_from_str(str::from_utf8(&output.stdout)
                                  .expect("get latest git commit datetime from output"),
@@ -56,7 +56,7 @@ pub fn get_git_current_rev() -> String {
         .args(&["rev-parse", "HEAD"])
         .output()
         .expect("get git current rev failed");
-    println!("{:?}", output);
+    trace!("git get current rev: {:?}", output);
     String::from_utf8(output.stdout).expect("get git current rev from output failed")
 }
 

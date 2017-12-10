@@ -8,6 +8,9 @@ extern crate diesel;
 #[macro_use]
 extern crate diesel_migrations;
 
+#[macro_use]
+extern crate log;
+extern crate env_logger;
 
 pub mod git;
 pub mod traverse;
@@ -31,7 +34,7 @@ fn main() {
         .arg(Arg::with_name("v")
             .short("v")
             .multiple(true)
-            .help("Sets the level of verbosity"))
+            .help("Sets the level of verbosity. More v is more verbose"))
         .arg(Arg::with_name("tags")
             .short("a")
             .long("tags")
@@ -54,15 +57,26 @@ fn main() {
                 .help("Postgres database url can also be set with TTOKEI_DB_URL env var")))
         .get_matches();
 
-    let input = matches.value_of("INPUT").unwrap();
-    println!("Using input file: {}", input);
+    match matches.occurrences_of("v") {
+        0 => env::set_var("RUST_LOG", "error"),
+        1 => env::set_var("RUST_LOG", "warn"),
+        2 => env::set_var("RUST_LOG", "info"),
+        3 => env::set_var("RUST_LOG", "debug"),
+        4 | _ => {
+            println!("Max logging level");
+            env::set_var("RUST_LOG", "trace");
+        }
+    }
+    env_logger::init();
 
-    let is_verbose = matches.is_present("v");
+    let input = matches.value_of("INPUT").unwrap();
+    info!("Using input file: {}", input);
+
 
     if matches.is_present("tags") {
-        println!("tags");
+        info!("Traversing git repository over tags");
     } else {
-        println!("ttokei over time");
+        info!("ttokei over time");
     }
 
     if let Some(matches) = matches.subcommand_matches("postgres") {
@@ -71,7 +85,7 @@ fn main() {
             .unwrap_or_else(|| env::var(DB_URL_VAR).expect("No TTOKEI_DB_URL supplied"));
 
         let outputter = output::postgres::PgOutputter::new(&db_url);
-        outputter.run_migrations(is_verbose);
+        outputter.run_migrations();
 
         traverse::run_tags(input, &outputter);
 

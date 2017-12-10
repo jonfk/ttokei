@@ -8,6 +8,7 @@ use super::Outputter;
 use self::model::{NewParse, NewLanguage, NewLanguageStats};
 
 use std;
+use log::Level;
 use tokei::{Languages, LanguageType, Language};
 use diesel::pg::PgConnection;
 use diesel::Connection;
@@ -27,8 +28,8 @@ impl PgOutputter {
         }
     }
 
-    pub fn run_migrations(&self, verbose: bool) {
-        if verbose {
+    pub fn run_migrations(&self) {
+        if log_enabled!(Level::Info) {
             embedded_migrations::run_with_output(&self.conn, &mut std::io::stdout())
                 .expect("postgres run migrations");
         } else {
@@ -51,7 +52,6 @@ impl Outputter for PgOutputter {
         let language_map = languages.remove_empty();
 
         for (name, language) in language_map {
-            //print_language(language, name);
             let language_id = insert::create_language(&self.conn,
                                                       NewLanguage {
                                                           parse_id: parse_id as i32,
@@ -76,10 +76,10 @@ impl Outputter for PgOutputter {
                                                       comments: stats.comments as i64,
                                                       lines: stats.lines as i64,
                                                   });
-                println!("inserted language stats {}", language_stats_id);
+                debug!("inserted language stats {}", language_stats_id);
             }
-            println!("inserted language: {}", language_id);
+            debug!("inserted language: {}", language_id);
         }
-        println!("inserted parse: {}", parse_id);
+        debug!("inserted parse: {}", parse_id);
     }
 }
