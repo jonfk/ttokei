@@ -55,7 +55,7 @@ impl Outputter for PgOutputter {
         for (name, language) in language_map {
             let language_id = insert::create_language(&self.conn,
                                                       NewLanguage {
-                                                          parse_id: parse_id as i32,
+                                                          parse_id: parse_id,
                                                           name: name.name(),
                                                           blanks: language.blanks as i64,
                                                           code: language.code as i64,
@@ -69,7 +69,8 @@ impl Outputter for PgOutputter {
                 let language_stats_id =
                     insert::create_language_stats(&self.conn,
                                                   NewLanguageStats {
-                                                      language_id: language_id as i64,
+                                                      language_id: language_id,
+                                                      parse_id: parse_id,
                                                       name: stats.name
                                                           .to_str()
                                                           .expect("stats name is not utf8"),

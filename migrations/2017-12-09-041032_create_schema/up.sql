@@ -24,6 +24,7 @@ CREATE TABLE IF NOT EXISTS languages (
 CREATE TABLE IF NOT EXISTS language_stats (
        language_stat_id bigserial primary key,
        language_id bigint references languages(language_id),
+       parse_id integer references parses(parse_id),
        name text NOT NULL,
        blanks bigint NOT NULL,
        code bigint NOT NULL,

@@ -35,6 +35,7 @@ pub struct NewLanguage<'a> {
 #[table_name="language_stats"]
 pub struct NewLanguageStats<'a> {
     pub language_id: i64,
+    pub parse_id: i32,
     pub name: &'a str,
     pub blanks: i64,
     pub code: i64,

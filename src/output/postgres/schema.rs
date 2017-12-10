@@ -16,6 +16,7 @@ table! {
     language_stats (language_stat_id) {
         language_stat_id -> Int8,
         language_id -> Nullable<Int8>,
+        parse_id -> Nullable<Int4>,
         name -> Text,
         blanks -> Int8,
         code -> Int8,
@@ -33,6 +34,7 @@ table! {
 }
 
 joinable!(language_stats -> languages (language_id));
+joinable!(language_stats -> parses (parse_id));
 joinable!(languages -> parses (parse_id));
 
 allow_tables_to_appear_in_same_query!(
