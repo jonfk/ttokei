@@ -31,11 +31,12 @@ pub fn get_latest_commit_date() -> String {
 
 pub fn get_latest_commit_datetime() -> DateTime<FixedOffset> {
     //git log -1 --format=%cI
-    let output = Command::new("git")
+    let mut output = Command::new("git")
         .args(&["log", "-1", "--format=%cI"])
         .output()
         .expect("get latest git commit datetime failed");
     println!("{:?}", output);
+    output.stdout.pop();
     DateTime::parse_from_str(str::from_utf8(&output.stdout)
                                  .expect("get latest git commit datetime from output"),
                              "%+")
