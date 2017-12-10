@@ -6,14 +6,18 @@ extern crate chrono;
 #[macro_use]
 extern crate diesel;
 #[macro_use]
-extern crate diesel_infer_schema;
+extern crate diesel_migrations;
+
 
 pub mod git;
 pub mod traverse;
 pub mod analysis;
 pub mod output;
 
+use std::env;
 use clap::{Arg, ArgGroup, App, SubCommand};
+
+static DB_URL_VAR: &'static str = "TTOKEI_DB_URL";
 
 fn main() {
     let matches = App::new("Tokei over time")
@@ -43,25 +47,18 @@ fn main() {
             .required(true))
         .subcommand(SubCommand::with_name("postgres")
             .about("Outputs the results to postgres")
-            .arg(Arg::with_name("username")
+            .arg(Arg::with_name("url")
                 .short("u")
-                .long("username")
-                .help("Postgres username"))
-            .arg(Arg::with_name("password")
-                .short("p")
-                .long("password")
-                .help("Postgres password")))
+                .long("url")
+                .takes_value(true)
+                .help("Postgres database url can also be set with TTOKEI_DB_URL env var")))
         .get_matches();
 
     let input = matches.value_of("INPUT").unwrap();
     println!("Using input file: {}", input);
 
-    match matches.occurrences_of("v") {
-        0 => println!("No verbose info"),
-        1 => println!("Some verbose info"),
-        2 => println!("Tons of verbose info"),
-        3 | _ => println!("Don't be crazy"),
-    }
+    let is_verbose = matches.is_present("v");
+
     if matches.is_present("tags") {
         println!("tags");
     } else {
@@ -69,8 +66,16 @@ fn main() {
     }
 
     if let Some(matches) = matches.subcommand_matches("postgres") {
+        let db_url = matches.value_of("url")
+            .map(|x| x.to_owned())
+            .unwrap_or_else(|| env::var(DB_URL_VAR).expect("No TTOKEI_DB_URL supplied"));
+
+        let outputter = output::postgres::PgOutputter::new(&db_url);
+        outputter.run_migrations(is_verbose);
+
+        traverse::run_tags(input, &outputter);
+
     } else {
         traverse::run_tags(input, &output::text::Text {});
-        //analysis::get_statistics(output::text::Text {}, "".to_string())
     }
 }

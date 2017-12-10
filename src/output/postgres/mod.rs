@@ -7,21 +7,32 @@ use super::Outputter;
 
 use self::model::{NewParse, NewLanguage, NewLanguageStats};
 
+use std;
 use tokei::{Languages, LanguageType, Language};
 use diesel::pg::PgConnection;
 use diesel::Connection;
 use chrono::{DateTime, FixedOffset};
+
+embed_migrations!("./migrations");
 
 pub struct PgOutputter {
     conn: PgConnection,
 }
 
 impl PgOutputter {
-    fn new(db_url: &str) -> PgOutputter {
-
+    pub fn new(db_url: &str) -> PgOutputter {
         PgOutputter {
             conn: PgConnection::establish(&db_url)
                 .expect(&format!("Error connecting to {}", db_url)),
+        }
+    }
+
+    pub fn run_migrations(&self, verbose: bool) {
+        if verbose {
+            embedded_migrations::run_with_output(&self.conn, &mut std::io::stdout())
+                .expect("postgres run migrations");
+        } else {
+            embedded_migrations::run(&self.conn).expect("postgres run migrations");
         }
     }
 }
