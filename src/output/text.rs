@@ -45,6 +45,11 @@ impl Outputter for Text {
                  total.blanks);
         println!("{}", ROW);
     }
+
+    fn pre_git_tag_traverse_summary<'a>(&self, origin_remote: &'a str, git_tags: Vec<&'a str>) {
+        println!("{}", ROW);
+        println!("Repository: {}", origin_remote);
+    }
 }
 
 

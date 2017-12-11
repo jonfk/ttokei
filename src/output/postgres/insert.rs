@@ -3,7 +3,7 @@ use diesel;
 use diesel::pg::PgConnection;
 use diesel::RunQueryDsl;
 
-use super::model::{NewParse, NewLanguage, NewLanguageStats};
+use super::model::*;
 
 pub fn create_parse<'a>(conn: &PgConnection, new_parse: NewParse<'a>) -> i32 {
     use super::schema::parses;
@@ -35,4 +35,24 @@ pub fn create_language_stats<'a>(conn: &PgConnection,
         .returning(language_stats::language_stat_id)
         .get_result(conn)
         .expect("create_language_stat execute")
+}
+
+pub fn create_git_repo<'a>(conn: &PgConnection, new_git_repo: NewGitRepo<'a>) -> i32 {
+    use super::schema::git_repos;
+
+    diesel::insert_into(git_repos::table)
+        .values(&new_git_repo)
+        .returning(git_repos::git_repo_id)
+        .get_result(conn)
+        .expect("create_git_repo execute")
+}
+
+pub fn create_git_tag<'a>(conn: &PgConnection, new_git_tag: NewGitTag<'a>) -> i64 {
+    use super::schema::git_tags;
+
+    diesel::insert_into(git_tags::table)
+        .values(&new_git_tag)
+        .returning(git_tags::git_tag_id)
+        .get_result(conn)
+        .expect("create_git_tag execute")
 }

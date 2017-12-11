@@ -61,6 +61,15 @@ pub fn get_git_current_rev() -> String {
     String::from_utf8(output.stdout).expect("get git current rev from output failed")
 }
 
+pub fn get_remote_origin_url() -> String {
+    let output = Command::new("git")
+        .args(&["config", "--get", "remote.origin.url"])
+        .output()
+        .expect("get git remote_origin_url failed");
+    trace!("git get git remote_origin_url: {:?}", output);
+    String::from_utf8(output.stdout).expect("git get git remote_origin_url from output failed")
+}
+
 pub fn checkout_before() {}
 
 pub fn get_rev_before() {}

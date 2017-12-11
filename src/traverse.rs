@@ -14,6 +14,8 @@ pub fn run_tags<T>(input_path: &str, outputter: &T)
     env::set_current_dir(&new_path).unwrap();
 
     let tags = git::get_tags();
+    outputter.pre_git_tag_traverse_summary(&git::get_remote_origin_url(),
+                                           tags.iter().map(|x| x.as_str()).collect());
 
     for tag in &tags {
         git::checkout(&tag);

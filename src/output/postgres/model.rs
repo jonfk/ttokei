@@ -1,7 +1,5 @@
 
-use super::schema::parses;
-use super::schema::languages;
-use super::schema::language_stats;
+use super::schema::*;
 use chrono::DateTime;
 use chrono::offset::FixedOffset;
 //use diesel::types::ToSql;
@@ -41,4 +39,17 @@ pub struct NewLanguageStats<'a> {
     pub code: i64,
     pub comments: i64,
     pub lines: i64,
+}
+
+#[derive(Insertable)]
+#[table_name="git_repos"]
+pub struct NewGitRepo<'a> {
+    pub origin_remote: &'a str,
+}
+
+#[derive(Insertable)]
+#[table_name="git_tags"]
+pub struct NewGitTag<'a> {
+    pub git_repo_id: i32,
+    pub git_tag: &'a str,
 }

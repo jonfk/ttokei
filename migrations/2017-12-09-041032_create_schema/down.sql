@@ -1,4 +1,6 @@
 
+DROP TABLE IF EXISTS git_tags;
 DROP TABLE IF EXISTS language_stats;
 DROP TABLE IF EXISTS languages;
 DROP TABLE IF EXISTS parses;
+DROP TABLE IF EXISTS git_repos;

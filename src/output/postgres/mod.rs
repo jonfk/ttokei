@@ -5,7 +5,7 @@ pub mod insert;
 
 use super::Outputter;
 
-use self::model::{NewParse, NewLanguage, NewLanguageStats};
+use self::model::{NewParse, NewLanguage, NewLanguageStats, NewGitRepo, NewGitTag};
 
 use std;
 use log::Level;
@@ -81,6 +81,22 @@ impl Outputter for PgOutputter {
                                                   });
                 debug!("inserted language stats {}", language_stats_id);
             }
+        }
+    }
+
+
+    fn pre_git_tag_traverse_summary<'a>(&self, origin_remote: &'a str, git_tags: Vec<&'a str>) {
+        let git_repo_id = insert::create_git_repo(&self.conn,
+                                                  NewGitRepo { origin_remote: origin_remote });
+        debug!("inserted git repo {}", git_repo_id);
+
+        for tag in git_tags {
+            let git_tag_id = insert::create_git_tag(&self.conn,
+                                                    NewGitTag {
+                                                        git_repo_id: git_repo_id,
+                                                        git_tag: tag,
+                                                    });
+            debug!("inserted git tag {}", git_tag_id);
         }
     }
 }

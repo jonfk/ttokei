@@ -1,6 +1,19 @@
 
+
+CREATE TABLE IF NOT EXISTS git_repos (
+       git_repo_id serial primary key,
+       origin_remote text
+);
+
+CREATE TABLE IF NOT EXISTS git_tags (
+       git_tag_id bigserial primary key,
+       git_repo_id integer references git_repos(git_repo_id),
+       git_tag text NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS parses (
        parse_id serial primary key,
+       git_repo_id integer references git_repos(git_repo_id),
        time timestamp with time zone NOT NULL,
        git_tag text
 );
