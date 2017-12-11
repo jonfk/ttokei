@@ -2,6 +2,7 @@
 pub mod model;
 pub mod schema;
 pub mod insert;
+pub mod query;
 
 use super::Outputter;
 
@@ -43,6 +44,12 @@ impl Outputter for PgOutputter {
                   languages: Languages,
                   time: &'a DateTime<FixedOffset>,
                   git_tag: Option<&'a str>) {
+        if query::does_parse_exist(&self.conn,
+                                   git_tag.expect("git_tag should exist TODO remove assumption")) {
+            debug!("git tag: {} already exists skipping",
+                   git_tag.expect("git tag should exist TODO remove assumption"));
+            return;
+        }
         let parse_id = insert::create_parse(&self.conn,
                                             NewParse {
                                                 time: time,

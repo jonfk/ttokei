@@ -53,3 +53,10 @@ pub struct NewGitTag<'a> {
     pub git_repo_id: i32,
     pub git_tag: &'a str,
 }
+
+#[derive(Queryable)]
+pub struct Parse {
+    pub parse_id: i32,
+    pub time: DateTime<FixedOffset>,
+    pub git_tag: Option<String>,
+}
