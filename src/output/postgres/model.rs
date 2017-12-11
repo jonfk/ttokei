@@ -29,7 +29,7 @@ pub struct NewLanguage<'a> {
     // pub quotes: Vec<Vec<&'a str>>,
 }
 
-#[derive(Insertable)]
+#[derive(Insertable, Clone)]
 #[table_name="language_stats"]
 pub struct NewLanguageStats<'a> {
     pub language_id: i64,

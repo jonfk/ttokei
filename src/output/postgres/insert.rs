@@ -26,7 +26,7 @@ pub fn create_language<'a>(conn: &PgConnection, new_language: NewLanguage<'a>) -
 }
 
 pub fn create_language_stats<'a>(conn: &PgConnection,
-                                 new_language_stat: NewLanguageStats<'a>)
+                                 new_language_stat: Vec<NewLanguageStats<'a>>)
                                  -> i64 {
     use super::schema::language_stats;
 
@@ -47,11 +47,11 @@ pub fn create_git_repo<'a>(conn: &PgConnection, new_git_repo: NewGitRepo<'a>) ->
         .expect("create_git_repo execute")
 }
 
-pub fn create_git_tag<'a>(conn: &PgConnection, new_git_tag: NewGitTag<'a>) -> i64 {
+pub fn create_git_tags<'a>(conn: &PgConnection, new_git_tags: Vec<NewGitTag<'a>>) -> i64 {
     use super::schema::git_tags;
 
     diesel::insert_into(git_tags::table)
-        .values(&new_git_tag)
+        .values(&new_git_tags)
         .returning(git_tags::git_tag_id)
         .get_result(conn)
         .expect("create_git_tag execute")

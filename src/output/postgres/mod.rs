@@ -65,20 +65,33 @@ impl Outputter for PgOutputter {
                                                       });
             debug!("inserted language: {}", language_id);
 
-            for stats in language.stats {
-                let language_stats_id =
-                    insert::create_language_stats(&self.conn,
-                                                  NewLanguageStats {
-                                                      language_id: language_id,
-                                                      parse_id: parse_id,
-                                                      name: stats.name
-                                                          .to_str()
-                                                          .expect("stats name is not utf8"),
-                                                      blanks: stats.blanks as i64,
-                                                      code: stats.code as i64,
-                                                      comments: stats.comments as i64,
-                                                      lines: stats.lines as i64,
-                                                  });
+            let bulk_stats_values: Vec<_> = language.stats
+                .iter()
+                .map(|stats| {
+                    NewLanguageStats {
+                        language_id: language_id,
+                        parse_id: parse_id,
+                        name: stats.name
+                            .to_str()
+                            .expect("stats name is not utf8"),
+                        blanks: stats.blanks as i64,
+                        code: stats.code as i64,
+                        comments: stats.comments as i64,
+                        lines: stats.lines as i64,
+                    }
+                })
+                .collect();
+
+
+            if bulk_stats_values.len() > 65534 {
+                for stats_values in bulk_stats_values.chunks(65534) {
+                    let language_stats_id = insert::create_language_stats(&self.conn,
+                                                                          stats_values.to_vec());
+                    debug!("inserted language stats {}", language_stats_id);
+                }
+            } else {
+                let language_stats_id = insert::create_language_stats(&self.conn,
+                                                                      bulk_stats_values);
                 debug!("inserted language stats {}", language_stats_id);
             }
         }
@@ -90,13 +103,15 @@ impl Outputter for PgOutputter {
                                                   NewGitRepo { origin_remote: origin_remote });
         debug!("inserted git repo {}", git_repo_id);
 
-        for tag in git_tags {
-            let git_tag_id = insert::create_git_tag(&self.conn,
-                                                    NewGitTag {
-                                                        git_repo_id: git_repo_id,
-                                                        git_tag: tag,
-                                                    });
-            debug!("inserted git tag {}", git_tag_id);
-        }
+        let bulk_tag_values = git_tags.iter()
+            .map(|tag| {
+                NewGitTag {
+                    git_repo_id: git_repo_id,
+                    git_tag: tag,
+                }
+            })
+            .collect();
+        let git_tag_id = insert::create_git_tags(&self.conn, bulk_tag_values);
+        debug!("inserted git tag {}", git_tag_id);
     }
 }
