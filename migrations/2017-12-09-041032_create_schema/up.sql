@@ -23,11 +23,18 @@ CREATE TABLE IF NOT EXISTS parses (
        git_tag text
 );
 
+CREATE TABLE IF NOT EXISTS completed_parses (
+       created_on timestamp default now(),
+       last_modified timestamp default now(),
+       completed_parse_id serial primary key,
+       parse_id integer references parses(parse_id) ON DELETE CASCADE
+);
+
 CREATE TABLE IF NOT EXISTS languages (
        created_on timestamp default now(),
        last_modified timestamp default now(),
        language_id bigserial primary key,
-       parse_id integer references parses(parse_id),
+       parse_id integer references parses(parse_id) ON DELETE CASCADE,
        name text NOT NULL,
        blanks bigint NOT NULL,
        code bigint NOT NULL,
@@ -45,8 +52,8 @@ CREATE TABLE IF NOT EXISTS language_stats (
        created_on timestamp default now(),
        last_modified timestamp default now(),
        language_stat_id bigserial primary key,
-       language_id bigint references languages(language_id),
-       parse_id integer references parses(parse_id),
+       language_id bigint references languages(language_id) ON DELETE CASCADE,
+       parse_id integer references parses(parse_id) ON DELETE CASCADE,
        name text NOT NULL,
        blanks bigint NOT NULL,
        code bigint NOT NULL,
@@ -73,6 +80,10 @@ update_lastmodified_timestamp_column();
 
 CREATE TRIGGER update_parses_last_modified BEFORE UPDATE
 ON parses FOR EACH ROW EXECUTE PROCEDURE
+update_lastmodified_timestamp_column();
+
+CREATE TRIGGER update_completed_parses_last_modified BEFORE UPDATE
+ON completed_parses FOR EACH ROW EXECUTE PROCEDURE
 update_lastmodified_timestamp_column();
 
 CREATE TRIGGER update_languages_last_modified BEFORE UPDATE
