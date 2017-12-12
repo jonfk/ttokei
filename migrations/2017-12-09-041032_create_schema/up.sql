@@ -1,17 +1,22 @@
 
-
 CREATE TABLE IF NOT EXISTS git_repos (
+       created_on timestamp default now(),
+       last_modified timestamp default now(),
        git_repo_id serial primary key,
        origin_remote text
 );
 
 CREATE TABLE IF NOT EXISTS git_tags (
+       created_on timestamp default now(),
+       last_modified timestamp default now(),
        git_tag_id bigserial primary key,
        git_repo_id integer references git_repos(git_repo_id),
        git_tag text NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS parses (
+       created_on timestamp default now(),
+       last_modified timestamp default now(),
        parse_id serial primary key,
        git_repo_id integer references git_repos(git_repo_id),
        time timestamp with time zone NOT NULL,
@@ -19,6 +24,8 @@ CREATE TABLE IF NOT EXISTS parses (
 );
 
 CREATE TABLE IF NOT EXISTS languages (
+       created_on timestamp default now(),
+       last_modified timestamp default now(),
        language_id bigserial primary key,
        parse_id integer references parses(parse_id),
        name text NOT NULL,
@@ -35,6 +42,8 @@ CREATE TABLE IF NOT EXISTS languages (
 );
 
 CREATE TABLE IF NOT EXISTS language_stats (
+       created_on timestamp default now(),
+       last_modified timestamp default now(),
        language_stat_id bigserial primary key,
        language_id bigint references languages(language_id),
        parse_id integer references parses(parse_id),
@@ -44,3 +53,32 @@ CREATE TABLE IF NOT EXISTS language_stats (
        comments bigint NOT NULL,
        lines bigint NOT NULL
 );
+
+-- triggers
+CREATE OR REPLACE FUNCTION update_lastmodified_timestamp_column()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.last_modified = now();
+  RETURN NEW;
+END;
+$$ language 'plpgsql';
+
+CREATE TRIGGER update_git_repos_last_modified BEFORE UPDATE
+ON git_repos FOR EACH ROW EXECUTE PROCEDURE
+update_lastmodified_timestamp_column();
+
+CREATE TRIGGER update_git_tags_last_modified BEFORE UPDATE
+ON git_tags FOR EACH ROW EXECUTE PROCEDURE
+update_lastmodified_timestamp_column();
+
+CREATE TRIGGER update_parses_last_modified BEFORE UPDATE
+ON parses FOR EACH ROW EXECUTE PROCEDURE
+update_lastmodified_timestamp_column();
+
+CREATE TRIGGER update_languages_last_modified BEFORE UPDATE
+ON languages FOR EACH ROW EXECUTE PROCEDURE
+update_lastmodified_timestamp_column();
+
+CREATE TRIGGER update_language_stats_last_modified BEFORE UPDATE
+ON language_stats FOR EACH ROW EXECUTE PROCEDURE
+update_lastmodified_timestamp_column();
