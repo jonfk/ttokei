@@ -1,4 +1,12 @@
 
+-- number of parses (data points in time)
+select count(*) from parses;
+
+-- span of time of information
+select (select min(time) from parses) as first_timepoint,
+(select max(time) from parses) as last_timepoint,
+age((select max(time) from parses), (select min(time) from parses)) as span_of_time;
+
 -- percentage parses completion
 select (select count(*) from completed_parses)::float / (select count(*) from git_tags) * 100;
 
