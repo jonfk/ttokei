@@ -94,18 +94,17 @@ impl Outputter for PgOutputter {
                   languages: Languages,
                   time: &'a DateTime<FixedOffset>,
                   git_tag: Option<&'a str>) {
-        if query::does_parse_exist(&self.conn,
-                                   git_tag.expect("git_tag should exist TODO remove assumption")) {
-            delete::parse_by_git_tag(&self.conn,
-                                     git_tag.expect("git_tag should exist TODO remove assumption"));
+        let git_tag = git_tag.expect("git_tag should exist TODO remove assumption");
+        if query::does_parse_exist(&self.conn, git_tag) &&
+           !query::is_parse_completed(&self.conn, git_tag) {
+            delete::parse_by_git_tag(&self.conn, git_tag);
 
-            debug!("deleted incomplete parse with tag {}",
-                   git_tag.expect("git tag should exist TODO remove assumption"));
+            debug!("deleted incomplete parse with tag {}", git_tag);
         }
         let parse_id = insert::create_parse(&self.conn,
                                             NewParse {
                                                 time: time,
-                                                git_tag: git_tag,
+                                                git_tag: Some(git_tag),
                                             });
         debug!("inserted parse: {}", parse_id);
 
