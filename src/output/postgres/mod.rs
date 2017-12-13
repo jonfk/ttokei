@@ -81,18 +81,8 @@ impl PgOutputter {
                 }
             })
             .collect();
-
-
-        if bulk_stats_values.len() > 65534 {
-            for stats_values in bulk_stats_values.chunks(10000) {
-                let language_stats_id = insert::create_language_stats(&self.conn,
-                                                                      stats_values.to_vec());
-                debug!("inserted language stats {}", language_stats_id);
-            }
-        } else {
-            let language_stats_id = insert::create_language_stats(&self.conn, bulk_stats_values);
-            debug!("inserted language stats {}", language_stats_id);
-        }
+        let language_stats_id = insert::create_language_stats(&self.conn, bulk_stats_values);
+        debug!("inserted language stats {}", language_stats_id);
     }
 }
 

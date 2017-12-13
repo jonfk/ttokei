@@ -6,6 +6,9 @@ use diesel::result::QueryResult;
 
 use super::model::*;
 
+const MAX_PER_BULK_INSERT: usize = 5000;
+const BULK_INSERT_CHUNK: usize = 1000;
+
 pub fn create_parse<'a>(conn: &PgConnection, new_parse: NewParse<'a>) -> i32 {
     use super::schema::parses;
 
@@ -38,15 +41,27 @@ pub fn create_language<'a>(conn: &PgConnection, new_language: NewLanguage<'a>) -
 }
 
 pub fn create_language_stats<'a>(conn: &PgConnection,
-                                 new_language_stat: Vec<NewLanguageStats<'a>>)
+                                 new_language_stats_values: Vec<NewLanguageStats<'a>>)
                                  -> i64 {
     use super::schema::language_stats;
 
-    diesel::insert_into(language_stats::table)
-        .values(&new_language_stat)
-        .returning(language_stats::language_stat_id)
-        .get_result(conn)
-        .expect("create_language_stat execute")
+    if new_language_stats_values.len() > MAX_PER_BULK_INSERT {
+        let mut last_stats_id = 0;
+        for stats_values in new_language_stats_values.chunks(BULK_INSERT_CHUNK) {
+            last_stats_id = diesel::insert_into(language_stats::table)
+                .values(stats_values)
+                .returning(language_stats::language_stat_id)
+                .get_result(conn)
+                .expect("create_language_stat execute");
+        }
+        last_stats_id
+    } else {
+        diesel::insert_into(language_stats::table)
+            .values(&new_language_stats_values)
+            .returning(language_stats::language_stat_id)
+            .get_result(conn)
+            .expect("create_language_stat execute")
+    }
 }
 
 pub fn create_git_repo<'a>(conn: &PgConnection, new_git_repo: NewGitRepo<'a>) -> QueryResult<i32> {
