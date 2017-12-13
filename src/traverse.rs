@@ -18,8 +18,12 @@ pub fn run_tags<T>(input_path: &str, outputter: &T)
                                            tags.iter().map(|x| x.as_str()).collect());
 
     for tag in &tags {
-        git::checkout(&tag);
-        analysis::get_statistics(outputter, Some(&tag));
+        if outputter.should_traverse_tag(&tag) {
+            git::checkout(&tag);
+            analysis::get_statistics(outputter, Some(&tag));
+        } else {
+            debug!("skipping git tag {} for traversal", tag);
+        }
     }
 
     env::set_current_dir(&prev_path).unwrap();

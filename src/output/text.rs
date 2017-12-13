@@ -50,6 +50,10 @@ impl Outputter for Text {
         println!("{}", ROW);
         println!("Repository: {}", origin_remote);
     }
+
+    fn should_traverse_tag<'a>(&self, git_tag: &'a str) -> bool {
+        true
+    }
 }
 
 

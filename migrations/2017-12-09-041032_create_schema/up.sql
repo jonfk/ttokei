@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS git_repos (
        created_on timestamp default now(),
        last_modified timestamp default now(),
        git_repo_id serial primary key,
-       origin_remote text
+       origin_remote text UNIQUE
 );
 
 CREATE TABLE IF NOT EXISTS git_tags (
@@ -11,7 +11,8 @@ CREATE TABLE IF NOT EXISTS git_tags (
        last_modified timestamp default now(),
        git_tag_id bigserial primary key,
        git_repo_id integer references git_repos(git_repo_id),
-       git_tag text NOT NULL
+       git_tag text NOT NULL,
+       UNIQUE(git_repo_id, git_tag)
 );
 
 CREATE TABLE IF NOT EXISTS parses (

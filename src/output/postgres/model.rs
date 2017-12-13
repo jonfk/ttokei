@@ -54,9 +54,22 @@ pub struct NewGitTag<'a> {
     pub git_tag: &'a str,
 }
 
+#[derive(Insertable)]
+#[table_name="completed_parses"]
+pub struct NewCompletedParse {
+    pub parse_id: i32,
+}
+
+
 #[derive(Queryable)]
 pub struct Parse {
     pub parse_id: i32,
     pub time: DateTime<FixedOffset>,
     pub git_tag: Option<String>,
+}
+
+#[derive(Queryable)]
+pub struct CompletedParse {
+    pub completed_parse_id: i32,
+    pub parse_id: i32,
 }
