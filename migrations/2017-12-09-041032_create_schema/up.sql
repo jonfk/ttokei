@@ -41,8 +41,8 @@ CREATE TABLE IF NOT EXISTS languages (
        code bigint NOT NULL,
        comments bigint NOT NULL,
        lines bigint NOT NULL,
-       nested boolean NOT NULL
-       --files text[],
+       nested boolean NOT NULL,
+       files text[]
        --line_comment text[],
        --multi_line text[][],
        --nested_comments text[][],

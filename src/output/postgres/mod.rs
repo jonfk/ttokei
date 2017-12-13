@@ -40,16 +40,23 @@ impl PgOutputter {
     }
 
     pub fn insert_language(&self, parse_id: i32, name: LanguageType, language: Language) {
-        let language_id = insert::create_language(&self.conn,
-                                                  NewLanguage {
-                                                      parse_id: parse_id,
-                                                      name: name.name(),
-                                                      blanks: language.blanks as i64,
-                                                      code: language.code as i64,
-                                                      comments: language.comments as i64,
-                                                      lines: language.lines as i64,
-                                                      nested: language.nested,
-                                                  });
+        let language_id =
+            insert::create_language(&self.conn,
+                                    NewLanguage {
+                                        parse_id: parse_id,
+                                        name: name.name(),
+                                        blanks: language.blanks as i64,
+                                        code: language.code as i64,
+                                        comments: language.comments as i64,
+                                        lines: language.lines as i64,
+                                        nested: language.nested,
+                                        files: language.files
+                                            .iter()
+                                            .map(|path| {
+                                                path.to_str().expect("path for file isn't unicode")
+                                            })
+                                            .collect(),
+                                    });
         debug!("inserted language: {}", language_id);
 
         self.insert_language_stats(parse_id, language_id, language.stats);

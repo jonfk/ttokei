@@ -38,6 +38,7 @@ table! {
         comments -> Int8,
         lines -> Int8,
         nested -> Bool,
+        files -> Nullable<Array<Text>>,
     }
 }
 
