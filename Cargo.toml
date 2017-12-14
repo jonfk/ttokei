@@ -11,6 +11,7 @@ tokei = "6.1.2"
 
 chrono = "0.4"
 humantime = "1.0.0"
+git2 = "0.6"
 
 diesel = { version = "1.0.0-beta1", features = ["postgres", "chrono"] }
 diesel_infer_schema = { version = "1.0.0-beta1", features = ["postgres"] }
