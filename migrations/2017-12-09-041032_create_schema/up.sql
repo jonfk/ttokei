@@ -67,7 +67,7 @@ CREATE TABLE IF NOT EXISTS git_commits (
        last_modified timestamp default now(),
        git_commit_id bigserial primary key,
        parse_id integer references parses(parse_id) ON DELETE CASCADE,
-       revision TEXT UNIQUE NOT NULL,
+       revision TEXT NOT NULL,
        commit_date timestamp with time zone NOT NULL,
        message TEXT,
        author_name TEXT,
