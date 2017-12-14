@@ -58,7 +58,7 @@ pub fn get_commits(since: Duration) -> Vec<Commit> {
     revwalk.push_head().expect("push head");
     revwalk.set_sorting(SORT_TIME);
 
-    println!("before revwalk 2");
+    trace!("revwalk from {} up to {} ago", head.id(), since);
     let commits: Vec<_> = revwalk.map(|rev| {
             let rev = rev.expect("get rev");
             let commit = repo.find_commit(rev).expect(&format!("couldn't find commit {}", rev));
