@@ -1,6 +1,7 @@
 
 extern crate tokei;
 extern crate chrono;
+extern crate git2;
 
 #[macro_use]
 extern crate diesel;
