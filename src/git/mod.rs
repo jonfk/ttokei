@@ -6,6 +6,7 @@ use chrono::{TimeZone, Utc, DateTime, FixedOffset, Duration};
 use git2;
 use git2::{Repository, SORT_TIME};
 
+#[derive(Debug)]
 pub struct Signature {
     pub name: Option<String>,
     pub email: Option<String>,
@@ -23,6 +24,7 @@ impl<'a> From<git2::Signature<'a>> for Signature {
     }
 }
 
+#[derive(Debug)]
 pub struct Commit {
     pub rev: String,
     pub commit_datetime: DateTime<FixedOffset>,

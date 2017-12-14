@@ -8,6 +8,22 @@ table! {
 }
 
 table! {
+    git_commits (git_commit_id) {
+        created_on -> Nullable<Timestamp>,
+        last_modified -> Nullable<Timestamp>,
+        git_commit_id -> Int8,
+        parse_id -> Nullable<Int4>,
+        revision -> Text,
+        commit_date -> Timestamptz,
+        message -> Nullable<Text>,
+        author_name -> Nullable<Text>,
+        author_email -> Nullable<Text>,
+        committer_name -> Nullable<Text>,
+        comitter_email -> Nullable<Text>,
+    }
+}
+
+table! {
     git_repos (git_repo_id) {
         created_on -> Nullable<Timestamp>,
         last_modified -> Nullable<Timestamp>,
@@ -69,6 +85,7 @@ table! {
 }
 
 joinable!(completed_parses -> parses (parse_id));
+joinable!(git_commits -> parses (parse_id));
 joinable!(git_tags -> git_repos (git_repo_id));
 joinable!(language_stats -> languages (language_id));
 joinable!(language_stats -> parses (parse_id));
@@ -77,6 +94,7 @@ joinable!(parses -> git_repos (git_repo_id));
 
 allow_tables_to_appear_in_same_query!(
     completed_parses,
+    git_commits,
     git_repos,
     git_tags,
     languages,

@@ -60,11 +60,24 @@ pub struct NewCompletedParse {
     pub parse_id: i32,
 }
 
+#[derive(Insertable)]
+#[table_name="git_commits"]
+pub struct NewGitCommit<'a> {
+    pub parse_id: i32,
+    pub revision: &'a str,
+    pub commit_date: DateTime<FixedOffset>,
+    pub message: Option<&'a str>,
+    pub author_name: Option<&'a str>,
+    pub author_email: Option<&'a str>,
+    pub committer_name: Option<&'a str>,
+    pub comitter_email: Option<&'a str>,
+}
+
 
 #[derive(Queryable)]
 pub struct Parse {
-    pub parse_id: i32,
-    pub time: DateTime<FixedOffset>,
+    pub parse_id: Option<i32>,
+    pub time: Option<DateTime<FixedOffset>>,
     pub git_tag: Option<String>,
 }
 

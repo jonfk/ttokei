@@ -83,3 +83,14 @@ pub fn create_git_tags<'a>(conn: &PgConnection,
         .returning(git_tags::git_tag_id)
         .get_result(conn)
 }
+
+pub fn create_git_commit<'a>(conn: &PgConnection,
+                             new_commits: Vec<NewGitCommit<'a>>)
+                             -> QueryResult<i64> {
+    use super::schema::git_commits;
+
+    diesel::insert_into(git_commits::table)
+        .values(&new_commits)
+        .returning(git_commits::git_commit_id)
+        .get_result(conn)
+}
