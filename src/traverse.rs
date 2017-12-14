@@ -20,8 +20,9 @@ pub fn run_tags<T>(input_path: &str, outputter: &T)
     for tag in &tags {
         if outputter.should_traverse_tag(&tag) {
             git_dep::checkout(&tag);
-            analysis::analyze_with_tokei(outputter, Some(&tag));
-            analysis::analyze_with_git(outputter, Some(&tag));
+            let git_commit_date = git_dep::get_latest_commit_datetime();
+
+            analysis::analyze(outputter, &git_commit_date, Some(&tag));
         } else {
             debug!("skipping git tag {} for traversal", tag);
         }

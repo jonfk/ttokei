@@ -142,14 +142,16 @@ impl Outputter for PgOutputter {
             })
             .collect();
 
-        let git_commit_id = insert::create_git_commit(&self.conn, new_commits)
-            .expect("insert git commits");
+        let git_commit_id = insert::create_git_commit(&self.conn, new_commits);
         debug!("inserted git commits {}", git_commit_id);
     }
 
     fn pre_git_tag_traverse_summary<'a>(&self, origin_remote: &'a str, git_tags: Vec<&'a str>) {
-        if let Some(git_repo_id) =
-            insert::create_git_repo(&self.conn, NewGitRepo { origin_remote: origin_remote }).ok() {
+        if let Some(git_repo_id) = insert::create_git_repo(&self.conn,
+                                                           NewGitRepo {
+                                                               origin_remote: origin_remote,
+                                                           })
+            .ok() {
 
             debug!("inserted git repo {}", git_repo_id);
 
