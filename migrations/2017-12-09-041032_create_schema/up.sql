@@ -62,6 +62,20 @@ CREATE TABLE IF NOT EXISTS language_stats (
        lines bigint NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS git_commits (
+       created_on timestamp default now(),
+       last_modified timestamp default now(),
+       git_commit_id bigserial primary key,
+       parse_id integer references parses(parse_id) ON DELETE CASCADE,
+       revision TEXT UNIQUE NOT NULL,
+       commit_date timestamp with time zone NOT NULL,
+       message TEXT,
+       author_name TEXT,
+       author_email TEXT,
+       committer_name TEXT,
+       comitter_email TEXT
+);
+
 -- triggers
 CREATE OR REPLACE FUNCTION update_lastmodified_timestamp_column()
 RETURNS TRIGGER AS $$
@@ -93,4 +107,8 @@ update_lastmodified_timestamp_column();
 
 CREATE TRIGGER update_language_stats_last_modified BEFORE UPDATE
 ON language_stats FOR EACH ROW EXECUTE PROCEDURE
+update_lastmodified_timestamp_column();
+
+CREATE TRIGGER update_git_commits_last_modified BEFORE UPDATE
+ON git_commits FOR EACH ROW EXECUTE PROCEDURE
 update_lastmodified_timestamp_column();

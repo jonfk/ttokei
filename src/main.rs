@@ -1,24 +1,16 @@
 
-extern crate tokei;
-extern crate clap;
-extern crate chrono;
+extern crate ttokei;
 
-#[macro_use]
-extern crate diesel;
-#[macro_use]
-extern crate diesel_migrations;
+extern crate clap;
 
 #[macro_use]
 extern crate log;
 extern crate env_logger;
 
-pub mod git;
-pub mod traverse;
-pub mod analysis;
-pub mod output;
-
 use std::env;
 use clap::{Arg, ArgGroup, App, SubCommand};
+
+use ttokei::{git, traverse, analysis, output};
 
 static DB_URL_VAR: &'static str = "TTOKEI_DB_URL";
 

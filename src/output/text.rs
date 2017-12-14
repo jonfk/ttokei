@@ -2,6 +2,7 @@ const ROW: &'static str = "----------------------------------------------------\
                            ---------------------------";
 
 use super::Outputter;
+use git::Commit;
 
 use std::borrow::Cow;
 use tokei::{Languages, LanguageType, Language};
@@ -11,10 +12,11 @@ use chrono::{DateTime, FixedOffset};
 pub struct Text {}
 
 impl Outputter for Text {
-    fn output<'a>(&self,
-                  languages: Languages,
-                  time: &'a DateTime<FixedOffset>,
-                  tag: Option<&'a str>) {
+    fn start_parse(&self, time: &DateTime<FixedOffset>, git_tag: Option<&str>) {}
+    fn output_tokei<'a>(&self,
+                        languages: Languages,
+                        time: &'a DateTime<FixedOffset>,
+                        tag: Option<&'a str>) {
         println!("{}", ROW);
         println!("Time: {}, Git Tag: {:?}", time, tag);
         println!(" {:<12} {:>12} {:>12} {:>12} {:>12} {:>12}",
@@ -44,6 +46,10 @@ impl Outputter for Text {
                  total.comments,
                  total.blanks);
         println!("{}", ROW);
+    }
+
+    fn output_git<'a>(&self, input: Vec<Commit>, tag: Option<&'a str>) {
+        println!("git commits {:?}", input);
     }
 
     fn pre_git_tag_traverse_summary<'a>(&self, origin_remote: &'a str, git_tags: Vec<&'a str>) {

@@ -1,4 +1,6 @@
 
+/// Deprecated functions to be removed eventually and replaced with git2 equivalents
+
 use std::process::Command;
 use std::str;
 use chrono::DateTime;

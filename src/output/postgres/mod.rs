@@ -7,7 +7,8 @@ pub mod delete;
 
 use super::Outputter;
 
-use self::model::{NewParse, NewLanguage, NewLanguageStats, NewGitRepo, NewGitTag};
+use self::model::{NewParse, NewLanguage, NewLanguageStats, NewGitRepo, NewGitTag, NewGitCommit};
+use git::Commit;
 
 use std;
 use log::Level;
@@ -87,10 +88,8 @@ impl PgOutputter {
 }
 
 impl Outputter for PgOutputter {
-    fn output<'a>(&self,
-                  languages: Languages,
-                  time: &'a DateTime<FixedOffset>,
-                  git_tag: Option<&'a str>) {
+    // Should be called before any output functions but not if should_traverse_tag returns false
+    fn start_parse(&self, time: &DateTime<FixedOffset>, git_tag: Option<&str>) {
         let git_tag = git_tag.expect("git_tag should exist TODO remove assumption");
         if query::does_parse_exist(&self.conn, git_tag) &&
            !query::is_parse_completed(&self.conn, git_tag) {
@@ -105,6 +104,16 @@ impl Outputter for PgOutputter {
                                             });
         debug!("inserted parse: {}", parse_id);
 
+    }
+
+    // Should never be called if should_traverse_tag returns false
+    fn output_tokei<'a>(&self,
+                        languages: Languages,
+                        time: &'a DateTime<FixedOffset>,
+                        git_tag: Option<&'a str>) {
+        let parse_id = query::find_parse(&self.conn, git_tag.expect("git_tag should exist"))
+            .expect("output tokei: parse should exist");
+
         let language_map = languages.remove_empty();
 
         for (name, language) in language_map {
@@ -113,6 +122,30 @@ impl Outputter for PgOutputter {
         insert::create_completed_parse(&self.conn, parse_id);
     }
 
+    // Should never be called if should_traverse_tag returns false
+    fn output_git<'a>(&self, input: Vec<Commit>, git_tag: Option<&'a str>) {
+        let parse_id = query::find_parse(&self.conn, git_tag.expect("git_tag should exist"))
+            .expect("output tokei: parse should exist");
+
+        let new_commits = input.iter()
+            .map(|commit| {
+                NewGitCommit {
+                    parse_id: parse_id,
+                    revision: &commit.rev,
+                    commit_date: commit.commit_datetime,
+                    message: commit.message.as_ref().map(|x| &**x),
+                    author_name: commit.author.name.as_ref().map(|x| &**x),
+                    author_email: commit.author.email.as_ref().map(|x| &**x),
+                    committer_name: commit.committer.name.as_ref().map(|x| &**x),
+                    comitter_email: commit.committer.email.as_ref().map(|x| &**x),
+                }
+            })
+            .collect();
+
+        let git_commit_id = insert::create_git_commit(&self.conn, new_commits)
+            .expect("insert git commits");
+        debug!("inserted git commits {}", git_commit_id);
+    }
 
     fn pre_git_tag_traverse_summary<'a>(&self, origin_remote: &'a str, git_tags: Vec<&'a str>) {
         if let Some(git_repo_id) =
